@@ -49,6 +49,7 @@ public class DefaultServerSocketChannelConfig extends DefaultChannelConfig
      */
     public DefaultServerSocketChannelConfig(ServerSocketChannel channel, ServerSocket javaSocket) {
         super(channel, new ServerChannelRecvByteBufAllocator());
+        // 将 channel.socket() 保存下来，用于之后进行端口的绑定
         this.javaSocket = ObjectUtil.checkNotNull(javaSocket, "javaSocket");
     }
 

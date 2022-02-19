@@ -476,7 +476,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
             AbstractChannel.this.eventLoop = eventLoop;
 
-            if (eventLoop.inEventLoop()) {
+            if (eventLoop.inEventLoop()) { //
                 register0(promise);
             } else {
                 try {

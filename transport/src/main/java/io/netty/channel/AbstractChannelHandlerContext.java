@@ -129,7 +129,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     @Override
     public EventExecutor executor() {
         if (executor == null) {
-            return channel().eventLoop();
+            return channel().eventLoop(); // NioEventLoop
         } else {
             return executor;
         }
@@ -142,6 +142,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     @Override
     public ChannelHandlerContext fireChannelRegistered() {
+        // findContextInbound(MASK_CHANNEL_REGISTERED): 获取下一个 handlerContext
         invokeChannelRegistered(findContextInbound(MASK_CHANNEL_REGISTERED));
         return this;
     }
@@ -488,7 +489,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         final AbstractChannelHandlerContext next = findContextOutbound(MASK_BIND);
         EventExecutor executor = next.executor();
         if (executor.inEventLoop()) {
-            next.invokeBind(localAddress, promise);
+            next.invokeBind(localAddress, promise); // 绑定端口
         } else {
             safeExecute(executor, new Runnable() {
                 @Override
@@ -877,7 +878,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         AbstractChannelHandlerContext ctx = this;
         EventExecutor currentExecutor = executor();
         do {
-            ctx = ctx.next;
+            ctx = ctx.next; // 获取 pipeline 链中的下一个 channelHandlerContext，默认链中只有 headContext 和 tailContext
         } while (skipContext(ctx, currentExecutor, mask, MASK_ONLY_INBOUND));
         return ctx;
     }

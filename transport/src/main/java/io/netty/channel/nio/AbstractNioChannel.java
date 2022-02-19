@@ -79,9 +79,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     protected AbstractNioChannel(Channel parent, SelectableChannel ch, int readInterestOp) {
         super(parent);
         this.ch = ch;
-        this.readInterestOp = readInterestOp;
+        this.readInterestOp = readInterestOp; // 存放操作事件对应的数字
         try {
-            ch.configureBlocking(false);
+            ch.configureBlocking(false); // 将 channel 设置为非阻塞
         } catch (IOException e) {
             try {
                 ch.close();
@@ -377,6 +377,8 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         boolean selected = false;
         for (;;) {
             try {
+                // 0表示对这个channel的任何事件都不感兴趣，这样会导致永远select不到这个channel
+                // 猜测：这里虽然注册的操作是0，但是我们拿到了 selectionKey，后面可以对 selectionKey 中关注的操作做更正
                 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
                 return;
             } catch (CancelledKeyException e) {
@@ -411,6 +413,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
 
         final int interestOps = selectionKey.interestOps();
         if ((interestOps & readInterestOp) == 0) {
+            // 修改注册的操作为 ACCEPT。interestOps
             selectionKey.interestOps(interestOps | readInterestOp);
         }
     }

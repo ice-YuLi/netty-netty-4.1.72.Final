@@ -310,7 +310,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         try {
             // 服务端：创建 NioServerSocketChannel 对象
             channel = channelFactory.newChannel();
-            init(channel);
+            init(channel); // 往 channel.pipeline中添加了一个channelHandler
         } catch (Throwable t) {
             if (channel != null) {
                 // channel can be null if newChannel crashed (eg SocketException("too many open files"))
@@ -322,6 +322,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
             return new DefaultChannelPromise(new FailedChannel(), GlobalEventExecutor.INSTANCE).setFailure(t);
         }
 
+        // config().group()：获取设置的 workGroup，类型为 NioEventLoopGroup
         ChannelFuture regFuture = config().group().register(channel);
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {

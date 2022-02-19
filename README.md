@@ -1,4 +1,4 @@
-![Build project](https://github.com/netty/netty/workflows/Build%20project/badge.svg)
+ ![Build project](https://github.com/netty/netty/workflows/Build%20project/badge.svg)
 
 # Netty Project
 

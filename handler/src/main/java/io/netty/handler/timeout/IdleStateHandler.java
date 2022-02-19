@@ -489,12 +489,12 @@ public class IdleStateHandler extends ChannelDuplexHandler {
 
         @Override
         protected void run(ChannelHandlerContext ctx) {
-            long nextDelay = readerIdleTimeNanos;
+            long nextDelay = readerIdleTimeNanos; // 允许的读超时时间
             if (!reading) {
                 nextDelay -= ticksInNanos() - lastReadTime;
             }
 
-            if (nextDelay <= 0) {
+            if (nextDelay <= 0) { // 如果小于0，则说明超时了
                 // Reader is idle - set a new timeout and notify the callback.
                 readerIdleTimeout = schedule(ctx, this, readerIdleTimeNanos, TimeUnit.NANOSECONDS);
 

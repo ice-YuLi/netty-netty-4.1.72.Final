@@ -203,6 +203,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
             newCtx = newContext(group, filterName(name, handler), handler);
 
+            // 添加到链表默认
             addLast0(newCtx);
 
             // If the registered is false it means that the channel was not registered on an eventLoop yet.
@@ -1397,7 +1398,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         public void channelActive(ChannelHandlerContext ctx) {
             ctx.fireChannelActive();
 
-            readIfIsAutoRead();
+            readIfIsAutoRead(); // 修改 selectionKey的interestOps属性
         }
 
         @Override

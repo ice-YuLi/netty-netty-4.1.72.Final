@@ -152,7 +152,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
                     pipeline.addLast(handler);
                 }
 
-                ch.eventLoop().execute(new Runnable() {
+                ch.eventLoop().execute(new Runnable() { // 为什么他后执行，也许就是eventLoop是一个单线程，所以需要执行完注册流程，再执行该代码
                     @Override
                     public void run() {
                         pipeline.addLast(new ServerBootstrapAcceptor(
@@ -210,12 +210,14 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
             final Channel child = (Channel) msg;
 
+            // 将childHandler加入到socketChannel的pipeline链中
             child.pipeline().addLast(childHandler);
 
             setChannelOptions(child, childOptions, logger);
             setAttributes(child, childAttrs);
 
             try {
+                // 将 accept 之后获取到的 socketChannel 注册到 workGroup 中的 NioEventLoop 中
                 childGroup.register(child).addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
